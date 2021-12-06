@@ -6,7 +6,14 @@
 import scrapy
 
 
-class ZhihuItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
+class Question(scrapy.Item):
     pass
+
+class Answer(scrapy.Item):
+    aid = scrapy.Field()  #答案id
+    qid = scrapy.Field()
+    updated_time = scrapy.Field()  #
+    author = scrapy.Field()
+    content = scrapy.Field()  #
+    voteup_count = scrapy.Field()
+    comment_count = scrapy.Field()
