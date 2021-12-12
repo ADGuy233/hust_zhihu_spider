@@ -1,0 +1,9 @@
+dependencies:
+  - python=3
+  - pip:
+    - scrapy
+    - beautifulsoup4
+    - lxml
+    - PyExecJs
+    - requests
+    - urllib3
