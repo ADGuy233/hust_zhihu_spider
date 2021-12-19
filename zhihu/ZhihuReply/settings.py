@@ -17,7 +17,7 @@ NEWSPIDER_MODULE = 'ZhihuReply.spiders'
 #USER_AGENT = 'zhihu (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -45,9 +45,9 @@ DEFAULT_REQUEST_HEADERS = {
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'zhihu.middlewares.ZhihuSpiderMiddleware': 543,
-#}
+# SPIDER_MIDDLEWARES = {
+#     'zhihuReply.middlewares.ZhihuSpiderMiddleware': 543,
+# }
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
@@ -65,7 +65,7 @@ DEFAULT_REQUEST_HEADERS = {
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 ITEM_PIPELINES = {
-    'zhihu.pipelines.ZhihuPipeline': 300,
+    'ZhihuReply.pipelines.ZhihuPipeline': 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -80,7 +80,7 @@ ITEM_PIPELINES = {
 #AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 # Enable showing throttling stats for every response received:
 #AUTOTHROTTLE_DEBUG = False
-
+REACTOR_THREADPOOL_MAXSIZE = 20
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
 #HTTPCACHE_ENABLED = True

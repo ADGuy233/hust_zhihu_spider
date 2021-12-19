@@ -9,6 +9,7 @@ class Question(scrapy.Item):
     qid = scrapy.Field()
     title = scrapy.Field()
     author = scrapy.Field()   # 后续的author均采用author字段下的url_token
+    name = scrapy.Field()
     created = scrapy.Field()
     topic_list = scrapy.Field()
     follow = scrapy.Field()
@@ -24,6 +25,7 @@ class Answer(scrapy.Item):
     qid = scrapy.Field()  #挂靠问题的标识id (即root)
     updated_time = scrapy.Field()
     author = scrapy.Field()
+    name = scrapy.Field()
     content = scrapy.Field()
     voteup_count = scrapy.Field()
     comment_count = scrapy.Field()
@@ -35,9 +37,24 @@ class Comment(scrapy.Item):
     root_comment = scrapy.Field() # 挂靠评论的id(如果为1级评论则为0)
     created_time = scrapy.Field()
     author = scrapy.Field()
+    name = scrapy.Field()
     content = scrapy.Field()
     voteup_count = scrapy.Field()
     comment_count = scrapy.Field()
+    featured = scrapy.Field()  # 是否为精选
+
+class ChildComment(scrapy.Item):
+    cid = scrapy.Field()  # 评论的标识id
+    aid = scrapy.Field()  # 挂靠回答的id(如果为问题评论则为0)
+    qid = scrapy.Field()  # 回答挂靠问题的id
+    root_comment = scrapy.Field() # 挂靠评论的id(如果为1级评论则为0)
+    created_time = scrapy.Field()
+    author = scrapy.Field()
+    name = scrapy.Field()
+    content = scrapy.Field()
+    voteup_count = scrapy.Field()
+    comment_count = scrapy.Field()
+    reply_to_author = scrapy.Field()
 
 class Topic(scrapy.Item):
     tid = scrapy.Field() # 话题的标识id
@@ -46,3 +63,4 @@ class Topic(scrapy.Item):
     introduction = scrapy.Field()
     followers_count = scrapy.Field()
     best_answers_count = scrapy.Field()
+
