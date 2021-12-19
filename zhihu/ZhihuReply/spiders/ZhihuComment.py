@@ -10,7 +10,7 @@ class ZhihureplySpider(scrapy.Spider):
     name = 'ZhihuComment'
 
     def start_requests(self):
-        file_path = r"C:\Users\bdzyl\OneDrive\论文硕士\知乎豆瓣\Spiders\Data\QuestionList\questionlist.csv"
+        file_path = r".\Data\QuestionList\questionlist.csv"
         Data = pd.read_csv(file_path)
         # 以排序方式为essence的问题列表中的qid为种子
         question_list_essence = Data[Data['sortby']=="essence"]['qid'].to_list()
@@ -29,7 +29,7 @@ class ZhihureplySpider(scrapy.Spider):
         is_end = json.loads(response.body.decode("utf-8"))["paging"]['is_end']
         offset = re.search('offset=\d*', response.request.url)
         # 在初始回答页，获取api未能覆盖的回答信息
-        if offset==0:
+        if offset == 0:
             question = json.loads(response.body.decode("utf-8"))["data"][0]['question']
             # 用meta传递不方便从html获取的信息
             meta = {}
@@ -230,6 +230,9 @@ class ZhihureplySpider(scrapy.Spider):
         best_answers_count = topic['best_answers_count']
         yield items.Topic(tid=tid,name=name,questions_count=questions_count,introduction=introduction,
                           followers_count=followers_count,best_answers_count=best_answers_count)
+
+    def anthor_parse(self,response):
+        pass
 
 
 
