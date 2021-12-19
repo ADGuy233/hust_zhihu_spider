@@ -16,8 +16,6 @@ class Question(scrapy.Item):
     good_question = scrapy.Field()
     comment = scrapy.Field()
 
-# class User(scrapy.Item):
-#     uid = scrapy.Field()
 
 class Answer(scrapy.Item):
     aid = scrapy.Field()  #回答的标识id
@@ -46,3 +44,10 @@ class Topic(scrapy.Item):
     introduction = scrapy.Field()
     followers_count = scrapy.Field()
     best_answers_count = scrapy.Field()
+
+class People(scrapy.Item):
+    token = scrapy.Field()
+    gender = scrapy.Field()
+    follower_account = scrapy.Field()
+    following_count = scrapy.Field()
+    following_topic = scrapy.Field()
