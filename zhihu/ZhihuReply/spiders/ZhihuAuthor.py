@@ -8,7 +8,7 @@ import pandas as pd
 
 from ZhihuReply import items
 
-def GetTopic(token,offset):
+def GetTopic(token,offset,is_new = True):
     url = 'https://www.zhihu.com/api/v4/members/{}/' \
           'following-topic-contributions?include=data%5B*%5D.topic.introduction&offset={}&limit=20'.format(token , offset)
     headers_zhihu={
@@ -22,13 +22,14 @@ def GetTopic(token,offset):
         response.encoding = response.apparent_encoding
         is_end = dict(response.text)["paging"]['is_end']
         topics = dict(response.text)['data']
-        ls = []
+        if is_new:
+            ls = []
         for topic in topics:
             ls.append(topic['topic']['id'])
         if is_end:
             return ls
         else:
-            GetTopic(token,offset + 20)
+            GetTopic(token, offset + 20, False)
         
     except Exception as e:
         print(e)
