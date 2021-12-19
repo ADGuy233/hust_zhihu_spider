@@ -5,8 +5,9 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
 
+import sqlite3
+from ZhihuReply import items
 
 class ZhihuPipeline:
     def process_item(self, item, spider):
