@@ -3,14 +3,13 @@ import json
 import re
 import requests
 from bs4 import BeautifulSoup as bs
-import urllib.request
 import pandas as pd
 
 from ZhihuReply import items
 
-def GetTopic(token,offset,is_new = True):
+def GetTopic(token,offset):
     url = 'https://www.zhihu.com/api/v4/members/{}/' \
-          'following-topic-contributions?include=data%5B*%5D.topic.introduction&offset={}&limit=20'.format(token , offset)
+          'following-topic-contributions?include=data%5B*%5D.topic.introduction&offset={}&limit=20'.format(token, offset)
     headers_zhihu={
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
         'cookie':'__snaker__id=qxvYG030DxDOhb61; SESSIONID=3U1KhGFNnUdFBPvI4z3I7dGWUIjwYsx5DPE8JusXCnE; '
@@ -22,14 +21,14 @@ def GetTopic(token,offset,is_new = True):
         response.encoding = response.apparent_encoding
         is_end = dict(response.text)["paging"]['is_end']
         topics = dict(response.text)['data']
-        if is_new:
+        if not offset:
             ls = []
         for topic in topics:
             ls.append(topic['topic']['id'])
         if is_end:
             return ls
         else:
-            GetTopic(token, offset + 20, False)
+            GetTopic(token, offset + 20)
         
     except Exception as e:
         print(e)
@@ -55,7 +54,7 @@ class ZhihuauthorSpider(scrapy.Spider):
                         'data%5B*%5D.topic.introduction&offset=0&limit=20'.format(token),
                     callback=self.author_parse)
 
-    def author_parse(self,response):
+    def author_parse(self, response):
         data = json.loads(response.body.decode('utf-8'))
         token = data['url_token']
         gender = data['gender']
