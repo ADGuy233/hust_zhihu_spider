@@ -2,7 +2,7 @@
 import sqlite3
 from ZhihuReply import items
 
-file_path = r"E:\ZhihuData\Replies\ZhihuEssence.db"
+file_path = r"C:\Users\ti\OneDrive\论文硕士\知乎豆瓣\Spiders\Data\Replies\ZhihuEssence.db"
 
 class ZhihuPipeline:
     def __init__(self):

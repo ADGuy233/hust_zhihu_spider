@@ -4,10 +4,8 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
-
-# useful for handling different item types with a single interface
-from itemadapter import is_item, ItemAdapter
-
+import base64
+import time
 
 class ZhihuSpiderMiddleware:
     # Not all methods need to be defined. If a method is not defined,
@@ -69,25 +67,23 @@ class ZhihuDownloaderMiddleware:
         return s
 
     def process_request(self, request, spider):
-        # Called for each request that goes through the downloader
-        # middleware.
-
-        # Must either:
-        # - return None: continue processing this request
-        # - or return a Response object
-        # - or return a Request object
-        # - or raise IgnoreRequest: process_exception() methods of
-        #   installed downloader middleware will be called
+        proxyServer = "https://dynamic.xingsudaili.com:10010"
+        proxyUser = "ZhihuReply"
+        proxyPass = "ZhihuReply"
+        proxyAuth = "Basic " + base64.urlsafe_b64encode(bytes((proxyUser + ":" + proxyPass), "ascii")).decode("utf8")
+        request.meta["proxy"] = proxyServer
+        request.headers["Proxy-Authorization"] = proxyAuth
         return None
 
+    # 用于记录异常请求
     def process_response(self, request, response, spider):
-        # Called with the response returned from the downloader.
-
-        # Must either;
-        # - return a Response object
-        # - return a Request object
-        # - or raise IgnoreRequest
-        return response
+        if response.status != 200:
+            name = time.strftime('%Y-%m-%d %H:%M', time.localtime())
+            with open(str(name), 'w+') as file:
+                file.write(response.url)
+                return response
+        else:
+            return response
 
     def process_exception(self, request, exception, spider):
         # Called when a download handler or a process_request()

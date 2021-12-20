@@ -13,17 +13,15 @@ class ZhihuReplySpider(scrapy.Spider):
         file_path = r"C:\Users\ti\OneDrive\论文硕士\知乎豆瓣\Spiders\Data\QuestionList\questionlist.csv"
         Data = pd.read_csv(file_path)
         # 以排序方式为essence的问题列表中的qid为种子
-        # question_list_essence = Data[Data['sortby']=="essence"]['qid'].to_list()
-        # question_list = list(set(question_list_essence))
-        question_list = ['487684056']
-
+        question_list_essence = Data[Data['sortby']=="essence"]['qid'].to_list()
+        question_list = list(set(question_list_essence))
         for qid in question_list:
             # 生成回答页面的初始url
             yield scrapy.Request(
                     url='https://www.zhihu.com/api/v4/questions/{}/answers?'
                         'include=data%5B*%5D.is_normal%2Cadmin_closed_comment%2Creward_info%2Cis_collapsed%2Cannotation_action%2Cannotation_detail%2Ccollapse_reason%2Cis_sticky%2Ccollapsed_by%2Csuggest_edit%2Ccomment_count%2Ccan_comment%2Ccontent%2Ceditable_content%2Cattachment%2Cvoteup_count%2Creshipment_settings%2Ccomment_permission%2Ccreated_time%2Cupdated_time%2Creview_info%2Crelevant_info%2Cquestion%2Cexcerpt%2Cis_labeled%2Cpaid_info%2Cpaid_info_content%2Crelationship.is_authorized%2Cis_author%2Cvoting%2Cis_thanked%2Cis_nothelp%2Cis_recognized%3Bdata%5B*%5D.mark_infos%5B*%5D.url%3Bdata%5B*%5D.author.follower_count%2Cvip_info%2Cbadge%5B*%5D.topics%3Bdata%5B*%5D.settings.table_of_content.enabled'
                         '&offset=0&limit=20&sort_by=updated'.format(qid),
-                    callback=self.answer_parse)
+                    callback=self.answer_parse,dont_filter=True)
 
     def answer_parse(self, response):
         # 获取“is_end”标签与当前页数
@@ -40,7 +38,7 @@ class ZhihuReplySpider(scrapy.Spider):
             meta['created'] = question['created']
             yield scrapy.Request(
                     url='https://www.zhihu.com/question/{}/answers/updated'.format(meta['qid']),
-                    callback=self.question_parse,meta=meta)
+                    callback=self.question_parse,meta=meta,dont_filter=True)
         # 对回答列表的数据进行批量解析
         answers = json.loads(response.body.decode("utf-8"))["data"]
         for answer in answers:
@@ -61,12 +59,12 @@ class ZhihuReplySpider(scrapy.Spider):
             if comment_count != 0:
                 yield scrapy.Request(
                     url='https://www.zhihu.com/api/v4/answers/{}/root_comments?order=normal&limit=20&offset=0&status=open'.format(aid),
-                    callback=self.comment_parse,meta=meta)
+                    callback=self.comment_parse,meta=meta,dont_filter=True)
         if is_end:
             pass
         else:
             yield scrapy.Request(url=json.loads(response.body.decode("utf-8"))["paging"]['next'],
-                                 callback=self.answer_parse)
+                                 callback=self.answer_parse,dont_filter=True)
 
     def question_parse(self,response):
         meta = response.meta  # 传入answer中的qid、title与created
@@ -83,12 +81,15 @@ class ZhihuReplySpider(scrapy.Spider):
         topics = soup.find('div', attrs={'data-zop-question':True})['data-zop-question']
         topics = json.loads(topics)['topics']
         # 无加密的话题信息仅能获得token、name
+        topic_list = []
         for topic in topics:
             tid = topic['id']
+            name = topic['name']
+            topic_list.append(name)
             yield scrapy.Request(
                     url='https://www.zhihu.com/api/v4/topics/{}?include=introduction%2Cquestions_count%2Cfollowers_count%2Cis_following'.format(tid),
-                    callback=self.topic_parse)
-        topic_list = json.dumps(topics)
+                    callback=self.topic_parse,dont_filter=True)
+        topic_list = " ".join(topic_list)
         # 解析问题的关注数与浏览数
         numboard = soup.find(class_="NumberBoard QuestionFollowStatus-counts NumberBoard--divider")
         numboard = numboard.find_all(class_="NumberBoard-itemValue")
@@ -116,7 +117,7 @@ class ZhihuReplySpider(scrapy.Spider):
             meta['root_comment'] = 0
             yield scrapy.Request(
                     url='https://www.zhihu.com/api/v4/questions/{}/root_comments?order=normal&limit=20&offset=0&status=open'.format(meta['qid']),
-                    callback=self.root_comment_parse,meta=meta)
+                    callback=self.root_comment_parse,meta=meta,dont_filter=True)
 
     # 负责解析挂靠于answer的一级评论  qid 不变 aid不变 root_comment = 0
     def comment_parse(self,response):
@@ -162,12 +163,12 @@ class ZhihuReplySpider(scrapy.Spider):
             else:
                 meta['root_comment'] = cid
                 yield scrapy.Request(url='https://www.zhihu.com/api/v4/comments/{}/child_comments'.format(cid),
-                                     meta=meta, callback=self.child_comment_parse)
+                                     meta=meta, callback=self.child_comment_parse,dont_filter=True)
         if is_end:
             pass
         else:
             yield scrapy.Request(url=json.loads(response.body.decode("utf-8"))["paging"]['next'],
-                                 meta=meta, callback=self.comment_parse)
+                                 meta=meta, callback=self.comment_parse,dont_filter=True)
 
     # 负责解析挂靠于question的一级评论
     def root_comment_parse(self,response):
@@ -213,13 +214,13 @@ class ZhihuReplySpider(scrapy.Spider):
             else:
                 meta['root_comment'] = cid
                 yield scrapy.Request(url='https://www.zhihu.com/api/v4/comments/{}/child_comments'.format(cid),
-                                     meta=meta, callback=self.child_comment_parse)
+                                     meta=meta, callback=self.child_comment_parse,dont_filter=True)
         if is_end:
             pass
         else:
             meta['root_comment'] = 0
             yield scrapy.Request(url=json.loads(response.body.decode("utf-8"))["paging"]['next'],
-                                 meta=meta, callback=self.comment_parse)
+                                 meta=meta, callback=self.comment_parse,dont_filter=True)
 
 
     # 负责解析挂靠于评论的二级评论
@@ -249,7 +250,7 @@ class ZhihuReplySpider(scrapy.Spider):
             pass
         else:
             yield scrapy.Request(url=json.loads(response.body.decode("utf-8"))["paging"]['next'],meta=meta,
-                                 callback=self.child_comment_parse)
+                                 callback=self.child_comment_parse,dont_filter=True)
 
     def topic_parse(self,response):
         topic = json.loads(response.body.decode("utf-8"))
