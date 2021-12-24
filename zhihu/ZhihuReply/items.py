@@ -5,6 +5,14 @@
 
 import scrapy
 
+class QuestionList(scrapy.Item):
+    qid = scrapy.Field()
+    title = scrapy.Field()
+    created = scrapy.Field()
+    topicid = scrapy.Field()
+    access_time = scrapy.Field()
+    type = scrapy.Field()
+
 class Question(scrapy.Item):
     qid = scrapy.Field()
     title = scrapy.Field()
@@ -63,4 +71,6 @@ class Topic(scrapy.Item):
     introduction = scrapy.Field()
     followers_count = scrapy.Field()
     best_answers_count = scrapy.Field()
+
+
 
