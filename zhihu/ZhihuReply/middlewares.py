@@ -9,6 +9,7 @@ import base64
 import hashlib
 import execjs
 import os
+import base64
 import time
 
 class ZhihuSpiderMiddleware:
@@ -89,6 +90,7 @@ class ZhihuDownloaderMiddleware:
         }
         return header
 
+
     def process_request(self, request, spider):
         proxyServer = "https://dynamic.xingsudaili.com:10010"
         proxyUser = "ZhihuReply"
@@ -101,13 +103,16 @@ class ZhihuDownloaderMiddleware:
             request.headers = Headers(headers)
         # else:
             # request.headers["Proxy-Authorization"] = proxyAuth
+
+        request.meta["proxy"] = proxyServer
+        request.headers["Proxy-Authorization"] = proxyAuth
         return None
 
     # 用于记录异常请求
     def process_response(self, request, response, spider):
         if response.status != 200:
             name = time.strftime('%Y-%m-%d %H:%M', time.localtime())
-            with open((str(name)+".txt"), 'w+') as file:
+            with open((str(name) + ".txt"), 'w+') as file:
                 file.write(response.url)
                 return response
         else:
