@@ -2,17 +2,6 @@
 import datetime
 
 # BOT_NAME = 'ZhihuReply'
-# Scrapy settings for zhihu project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     https://docs.scrapy.org/en/latest/topics/settings.html
-#     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
-# BOT_NAME = 'ZhihuReply'
-#
 SPIDER_MODULES = ['ZhihuReply.spiders']
 NEWSPIDER_MODULE = 'ZhihuReply.spiders'
 
@@ -20,22 +9,15 @@ NEWSPIDER_MODULE = 'ZhihuReply.spiders'
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-
 #CONCURRENT_REQUESTS = 10
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-
-DOWNLOAD_DELAY = 1
+DOWNLOAD_DELAY = 0
 # The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 100
+CONCURRENT_REQUESTS_PER_DOMAIN = 100
 # CONCURRENT_REQUESTS_PER_IP = 1
-
-# The download delay setting will honor only one of:
-# CONCURRENT_REQUESTS_PER_DOMAIN = 100
-# CONCURRENT_REQUESTS_PER_IP = 100
-
 
 # Disable cookies (enabled by default)
 COOKIES_ENABLED = False
@@ -61,8 +43,6 @@ RETRY_ENABLED = True
 # }
 
 # Enable or disable downloader middlewares
-
-# See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 
 DOWNLOADER_MIDDLEWARES = {
     'ZhihuReply.middlewares.ZhihuDownloaderMiddleware': 543,
@@ -93,7 +73,6 @@ ITEM_PIPELINES = {
 #AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
 # Enable showing throttling stats for every response received:
 #AUTOTHROTTLE_DEBUG = False
-
 REACTOR_THREADPOOL_MAXSIZE = 100
 # Enable and configure HTTP caching (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
@@ -101,12 +80,8 @@ REACTOR_THREADPOOL_MAXSIZE = 100
 #HTTPCACHE_EXPIRATION_SECS = 0
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
-
 # LOG_LEVEL = 'INFO'
 # to_day = datetime.datetime.now()
 # log_file_path = r'C:\Users\bdzyl\OneDrive\论文硕士\知乎豆瓣\Spiders\Log\scrapy_{}_{}_{}.log'.format(to_day.year, to_day.month, to_day.day)
 # LOG_FILE = log_file_path
 # #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-
-#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-

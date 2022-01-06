@@ -16,7 +16,7 @@ class QuestionList(scrapy.Item):
 class Question(scrapy.Item):
     qid = scrapy.Field()
     title = scrapy.Field()
-    author = scrapy.Field()   # 后续的author均采用author字段下的url_token
+    author = scrapy.Field()   # 用户id
     name = scrapy.Field()
     created = scrapy.Field()
     topic_list = scrapy.Field()
@@ -24,9 +24,6 @@ class Question(scrapy.Item):
     view = scrapy.Field()
     good_question = scrapy.Field()
     comment = scrapy.Field()
-
-# class User(scrapy.Item):
-#     uid = scrapy.Field()
 
 class Answer(scrapy.Item):
     aid = scrapy.Field()  #回答的标识id
@@ -71,6 +68,17 @@ class Topic(scrapy.Item):
     introduction = scrapy.Field()
     followers_count = scrapy.Field()
     best_answers_count = scrapy.Field()
+
+class Author(scrapy.Item):
+    author = scrapy.Field()  # 用户id作为主键
+    name = scrapy.Field()
+    answer_count = scrapy.Field()
+    badge = scrapy.Field()
+
+class FollowingTopic(scrapy.Item):
+    author = scrapy.Field()
+    following_topic = scrapy.Field()
+
 
 
 

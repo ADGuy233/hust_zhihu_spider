@@ -16,6 +16,7 @@ class ZhihuPipeline:
         self.pool_Comment = []
         self.pool_ChildComment = []
         self.pool_Topic = []
+        self.pool_Author = []
         # 创建连接数据库的连接与游标
         self.conn = None  # type: sqlite3.Connection
         self.cursor = None  # type: sqlite3.Cursor
@@ -26,6 +27,7 @@ class ZhihuPipeline:
         self.sql_insert_Comment = '''INSERT OR IGNORE INTO Comment VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11)'''
         self.sql_insert_ChildComment = '''INSERT OR IGNORE INTO ChildComment VALUES (:1, :2, :3, :4, :5, :6, :7, :8, :9, :10, :11)'''
         self.sql_insert_Topic = '''INSERT OR IGNORE INTO Topic VALUES (:1, :2, :3, :4, :5, :6)'''
+        self.sql_insert_Author = '''INSERT OR IGNORE INTO Author VALUES (:1, :2, :3, :4)'''
         # 创建数据库各表
         self.sql_create_QuestionList = '''
             CREATE TABLE IF NOT EXISTS "QuestionList"(
@@ -109,6 +111,15 @@ class ZhihuPipeline:
             PRIMARY KEY ("tid")
             );
             '''
+        self.sql_create_Author = '''
+            CREATE TABLE IF NOT EXISTS "Author"(
+            "author" TEXT NOT NULL,
+            "name" TEXT,
+            "answer_count" INTEGER,
+            "badge" TEXT,
+            PRIMARY KEY ("author")
+            );
+            '''
     def open_spider(self, spider):
         try:
             self.conn = sqlite3.connect(file_path)
@@ -119,6 +130,7 @@ class ZhihuPipeline:
             self.cursor.execute(self.sql_create_Comment)
             self.cursor.execute(self.sql_create_ChildComment)
             self.cursor.execute(self.sql_create_Topic)
+            self.cursor.execute(self.sql_create_Author)
             print('db opened')
         except:
              print('[E] error open db')
@@ -153,6 +165,11 @@ class ZhihuPipeline:
             self.cursor.executemany(self.sql_insert_Topic, self.pool_Topic)
             self.conn.commit()
             self.pool_Topic.clear()
+        
+        if len(self.pool_Author):
+            self.cursor.executemany(self.sql_insert_Author, self.pool_Author)
+            self.conn.commit()
+            self.pool_Author.clear()
 
     def process_item(self, item, spider):
 
@@ -243,6 +260,20 @@ class ZhihuPipeline:
                 self.cursor.executemany(self.sql_insert_Topic, self.pool_Topic)
                 self.conn.commit()
                 self.pool_Topic.clear()
+
+        if isinstance(item, items.Author):
+            if 'author' not in item:
+                print('a blank Item')
+                return item
+            else:
+                self.pool_Author.append((
+                    item['author'], item['name'], item['answer_count'], item['badge']
+                ))
+                if len(self.pool_Author) < 50:
+                    return item
+                self.cursor.executemany(self.sql_insert_Author, self.pool_Author)
+                self.conn.commit()
+                self.pool_Author.clear()
 
         return item
         
